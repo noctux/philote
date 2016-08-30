@@ -1,0 +1,19 @@
+{
+	"required": "foobar",
+	"choice": "c",
+	"al": "baz",
+	"string": "string",
+	"list": [1,2,3,4],
+	"bool": true,
+	"int": 1,
+	"float": 1.0,
+	"dict": {
+		"a": 1,
+		"b": 2
+	},
+	"path": "/tmp/asdf",
+	"raw": "raw",
+	"jsonarg": "{\"a\": 4}",
+	"ra": "ra",
+	"command": "bash -c '>&2 echo foobar'"
+}

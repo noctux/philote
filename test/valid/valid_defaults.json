@@ -1,0 +1,7 @@
+{
+	"required": "foobar",
+	"reqalias": "ra",
+	"default"   : "b",
+	"defchoice" : "bar",
+	"defreq"    : "baz"
+}
