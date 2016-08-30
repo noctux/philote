@@ -13,20 +13,33 @@ my $outdir;
 my $truncate = '';
 my $inputfile;
 my $usage='';
+my @whitelist=('io');
+my @cliwhitelist;
 
-GetOptions('output=s' => \$outdir, 'truncate' => \$truncate, 'input=s' => \$inputfile, 'help' => \$usage);
+GetOptions('output=s' => \$outdir, 'truncate' => \$truncate, 'input=s' => \$inputfile, 'help' => \$usage, 'whitelist=s' => \@cliwhitelist);
+
+@cliwhitelist = split(/,/, join(',', @cliwhitelist));
+push @whitelist, @cliwhitelist;
+@whitelist = uniq(@whitelist);
+my %whitelisted = map {$_ => 1} @whitelist;
 
 if (   $usage
 	|| ((!$outdir)    || (! -d $outdir))
 	|| ((!$inputfile) || (! -f $inputfile))) {
 	print <<"EOF";
-$0 --input <file.lua> --output <directory> [--truncate]
-	--help     Print this help message
-	--input    file to fatpack. Expects all libs to reside in basedir(file)
-	--output   output directory for fatpacked files
-	--truncate unconditionally override in outdir (default=false)
+$0 --input <file.lua> --output <directory> [--truncate] [--whitelist <module>,<module>]
+	--help      Print this help message
+	--input     file to fatpack. Expects all libs to reside in basedir(file)
+	--output    output directory for fatpacked files
+	--truncate  unconditionally override in outdir (default=false)
+	--whitelist modules not to fatpack
 EOF
 	exit -1;
+}
+
+sub uniq {
+    my %seen;
+    grep !$seen{$_}++, @_;
 }
 
 sub slurp {
@@ -123,8 +136,13 @@ sub unslurp {
 	my $dst = shift;
 	my $content = shift;
 
-	open(my $fh, '>', $dst);
-	print $fh, $content;
+	if (-f $dst && !$truncate) {
+		print STDERR "$dst already exists and --truncate was not specified\n";
+		exit(1);
+	}
+
+	open(my $fh, '>', $dst) or die "Could not open file '$dst'";
+	print $fh $content;
 	close $fh;
 }
 
@@ -150,7 +168,7 @@ sub main {
 
 		# Add all new modules and their contents
 		foreach my $module (@new) {
-			if (! exists $modules->{$module}) {
+			if (! exists $modules->{$module} && ! exists $whitelisted{$module}) {
 				$modules->{$module} = getModule($includedir, $module);
 			}
 		}
@@ -162,7 +180,7 @@ sub main {
 
 	my $fat = fatpack($inputmodule, $modules);
 
-	unslurp("$outdir/$mainmodule.lua", $fat);
+	unslurp("$outdir/$inputmodule.lua", $fat);
 }
 
 main();
