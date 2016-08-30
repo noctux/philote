@@ -19,10 +19,8 @@ end
 local function split(str, delimiter)
 	local toks = {}
 
-	local i = 0
 	for tok in string.gmatch(str, "[^".. delimiter .. "]+") do
-		toks[i] = tok
-		i = i + 1
+		toks[#toks + 1] = tok
 	end
 
 	return toks
@@ -67,12 +65,16 @@ local function canonicalize(params, spec)
 	for k,v in pairs(params) do
 		local desc = findspec(k, spec)
 		if not desc then
-			return nil, "no such parameter " .. k
+			-- ignore _ansible parameters
+			if 1 ~= string.find(k, "_ansible") then
+				return nil, "no such parameter " .. k
+			end
+		else
+			if copy[desc['name']] then
+				return nil, "duplicate parameter " .. desc['name']
+			end
+			copy[desc['name']] = v
 		end
-		if copy[desc['name']] then
-			return nil, "duplicate parameter " .. desc['name']
-		end
-		copy[desc['name']] = v
 	end
 
 	params = copy
@@ -346,7 +348,7 @@ function Ansible:fail_json(kwargs)
 		kwargs['invocations'] = {module_args=self.params}
 	end
 
-	print(json.encode(kwargs, {indent=true}))
+	io.write(json.encode(kwargs))
 	os.exit(1)
 end
 
@@ -359,7 +361,7 @@ function Ansible:exit_json(kwargs)
 		kwargs['invocations'] = {module_args=self:get_params()}
 	end
 
-	print(json.encode(kwargs, {indent=true}))
+	io.write(json.encode(kwargs))
 	os.exit(0)
 end
 
