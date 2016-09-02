@@ -1,7 +1,7 @@
 
 local Ansible = {}
 
-local io = require("io")
+local io   = require("io")
 local json = require("dkjson")
 
 Ansible.__index = Ansible
@@ -33,7 +33,7 @@ local function append(t1, t2)
 	return t1
 end
 
-local function contains(needle, haystack)
+function Ansible.contains(needle, haystack)
 	for _,v in pairs(haystack) do
 		if needle == v then
 			return true
@@ -51,7 +51,7 @@ local function findspec(name, spec)
 	-- check whether an alias exists
 	for k,v in pairs(spec) do
 		if type(v) == "table" and v['aliases'] then
-			if contains(name, v['aliases']) then
+			if Ansible.contains(name, v['aliases']) then
 				return v
 			end
 		end
@@ -176,9 +176,9 @@ local function check_transform_type(variable, ansibletype)
 			local BOOLEANS_TRUE  = {'yes', 'on', '1', 'true', 'True'}
 			local BOOLEANS_FALSE = {'no', 'off', '0', 'false', 'False'}
 
-			if contains(variable, BOOLEANS_TRUE) then
+			if Ansible.contains(variable, BOOLEANS_TRUE) then
 				return true
-			elseif contains(variable, BOOLEANS_FALSE) then
+			elseif Ansible.contains(variable, BOOLEANS_FALSE) then
 				return false
 			end
 		end
@@ -225,13 +225,13 @@ function Ansible:parse(inputfile)
 	params, err = canonicalize(params, self.spec)
 
 	if not params then
-		self:fail_json({msg=err})
+		self:fail_json({msg="Err: " .. tostring(err)})
 	end
 
 	for k,v in pairs(self.spec) do
 		-- setup defaults
 		if v['default'] then
-			if not params[k] then
+			if nil == params[k] then
 				params[k] = v['default']
 			end
 		end
@@ -249,16 +249,16 @@ function Ansible:parse(inputfile)
 		local typedesc = self.spec[k]['type']
 		if typedesc then
 			local val, err = check_transform_type(v, typedesc)
-			if val then
+			if nil ~= val then
 				params[k] = val
 			else
-				self:fail_json({msg=err})
+				self:fail_json({msg="Err: " .. tostring(err)})
 			end
 		end
 
 		local choices = self.spec[k]['choices']
 		if choices then
-			if not contains(v, choices) then
+			if not Ansible.contains(v, choices) then
 				self:fail_json({msg=v .. " not a valid choice for " .. k})
 			end
 		end
