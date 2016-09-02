@@ -3,6 +3,7 @@ local Ansible = {}
 
 local io   = require("io")
 local json = require("dkjson")
+local ubus = require("ubus")
 
 Ansible.__index = Ansible
 
@@ -367,6 +368,32 @@ end
 
 function Ansible:get_params()
 	return self.params
+end
+
+function Ansible:ubus_connect()
+	local p = self:get_params()
+	local timeout = p['timeout']
+	if not timeout then
+		timeout = 30
+	end
+	local socket = p['socket']
+
+	local conn = ubus.connect(socket, timeout)
+	if not conn then
+		self:fail_json({msg="Failed to connect to ubus"})
+	end
+
+	return conn
+end
+
+function Ansible:ubus_call(conn, namespace, procedure, arg)
+	local res, status = conn:call(namespace, procedure, arg)
+
+	if nil ~= status and 0 ~= status then
+		self:fail_json({msg="Ubus call failed", call={namespace=namespace, procedure=procedure, arg=arg, status=status}})
+	end
+
+	return res
 end
 
 return Ansible
