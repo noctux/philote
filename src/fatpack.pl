@@ -14,14 +14,12 @@ my $truncate = '';
 my $inputfile;
 my $usage='';
 my @whitelist=('io');
-my @cliwhitelist;
 
-GetOptions('output=s' => \$outdir, 'truncate' => \$truncate, 'input=s' => \$inputfile, 'help' => \$usage, 'whitelist=s' => \@cliwhitelist);
+GetOptions('output=s' => \$outdir, 'truncate' => \$truncate, 'input=s' => \$inputfile, 'help' => \$usage, 'whitelist=s' => \@whitelist);
 
-@cliwhitelist = split(/,/, join(',', @cliwhitelist));
-push @whitelist, @cliwhitelist;
-@whitelist = uniq(@whitelist);
-my %whitelisted = map {$_ => 1} @whitelist;
+@whitelist = uniq(split(/,/, join(',', @whitelist)));
+my $whitelisted = join '|', map{ "^" . $_ }  map{quotemeta} sort {length($b)<=>length($a)}@whitelist;
+my $whitelistre = qr/($whitelisted)/;
 
 if (   $usage
 	|| ((!$outdir)    || (! -d $outdir))
@@ -168,7 +166,7 @@ sub main {
 
 		# Add all new modules and their contents
 		foreach my $module (@new) {
-			if (! exists $modules->{$module} && ! exists $whitelisted{$module}) {
+			if (! exists $modules->{$module} && $module !~ $whitelistre) {
 				$modules->{$module} = getModule($includedir, $module);
 			}
 		}
