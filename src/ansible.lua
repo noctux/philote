@@ -1,4 +1,3 @@
-
 local Ansible = {}
 
 local io   = require("io")
@@ -29,7 +28,7 @@ end
 
 local function append(t1, t2)
 	for k,v in ipairs(t2) do
-		t1[#t1 + k] = v
+		t1[#t1 + 1] = v
 	end
 	return t1
 end
@@ -94,6 +93,21 @@ function Ansible:slurp(path)
 	end
 	f:close()
 	return content
+end
+
+function Ansible:unslurp(path, content)
+	local f, err = io.open(path, "w+")
+	if f == nil then
+		Ansible.fail_json({msg="failed to open file " .. path .. ": " .. err})
+	end
+	
+	local res = f:write(content)
+
+	if not res then
+		self:fail_json({msg="read from file " .. path .. "failed"})
+	end
+	f:close()
+	return res
 end
 
 local function parse_dict_from_string(str)
@@ -307,7 +321,7 @@ end
 function Ansible:remove_file(path)
 	local rc, err = os.remove(path)
 	if nil == rc then
-		self.fail_json({msg="Internal, execute: failed to remove file " .. path})
+		self:fail_json({msg="Internal, execute: failed to remove file " .. path})
 	end
 	return rc
 end
@@ -337,6 +351,28 @@ function Ansible:run_command(command)
 	self:remove_file(stderr)
 
 	return rc, out, err
+end
+
+function Ansible:copy(src, dest)
+	local command = string.format("cp -f %q %q", src, dest)
+	local rc, _,  err = self:run_command(command)
+
+	if rc ~= 0 then
+		return false, err
+	else
+		return true, err
+	end
+end
+
+function Ansible:move(src, dest)
+	local command = string.format("mv -f %q %q", src, dest)
+	local rc, _,  err = self:run_command(command)
+
+	if rc ~= 0 then
+		return false, err
+	else
+		return true, err
+	end
 end
 
 function Ansible:fail_json(kwargs)
@@ -394,6 +430,38 @@ function Ansible:ubus_call(conn, namespace, procedure, arg)
 	end
 
 	return res
+end
+
+function Ansible:backup_local(file)
+	local backupdest
+
+	if file_exits(file) then
+		local ext = os.time("%Y-%m-%d@H:%M:%S~")
+
+		backupdest = string.format("%s.%s", file, ext)
+
+		local content = self:slurp(file)
+		local res = self:unslurp(backupdest, content)
+	end
+
+	return backupdest
+end
+
+function Ansible:is_dir(path)
+	local f, err, code = io.open(path, "r")
+
+	if nil == f then
+		return false, err, code
+	end
+
+	local ok, err, code = f:read(1)
+	f:close()
+	return code == 21, nil, nil
+end
+
+function Ansible:check_mode()
+	-- FIXME
+	return false
 end
 
 return Ansible
