@@ -51,11 +51,11 @@ function main(arg)
 		-- not taken by the file module, but other modules call file so it must ignore them
 		, content = {}
 		, backup = {}
-		, force = {}
+		-- , force = {}
 		, remote_src = {}
 		, regexp = {}
 		, delimiter = {}
-		, directory_mode = {}
+		-- , directory_mode = {}
 		}
 	)
 
