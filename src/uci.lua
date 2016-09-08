@@ -34,24 +34,45 @@ function commit(module)
 	local conn = module:ubus_connect()
 	local path = module:get_params()["name"]
 
-	if path["option"] or path["section"] then
-		module:fail_json({msg="Only whole configs can be committed"})
+	local configs
+	if path == nil then
+		local conf = module:ubus_call(conn, "uci", "configs", {})
+		configs = conf['configs']
+	else
+		if path["option"] or path["section"] then
+			module:fail_json({msg="Only whole configs can be committed"})
+		end
+
+		configs = { path["config"] }
 	end
 
-	local res = docommit(module, conn, path["config"])
+	local res = {}
+	for _, conf in ipairs(configs) do
+		res[#res + 1] = docommit(module, conn, conf)
+	end
 
-	module:exit_json({msg="Committed all changes for config " .. path["config"], changed=true, result=res})
+	module:exit_json({msg="Committed all changes for " .. #configs ..  " configurations", changed=true, result=res})
 end
 
 function revert(module)
 	local conn = module:ubus_connect()
 	local path = module:get_params()["name"]
 
-	local conf, sec = check_config(module, conn, path["config"], nil)
+	local configs
+	if path == nil then
+		local conf = module:ubus_call(conn, "uci", "configs", {})
+		configs = conf['configs']
+	else
+		local conf, sec = check_config(module, conn, path["config"], nil)
+		configs = { conf }
+	end
 
-	local res = module:ubus_call(conn, "uci", "revert", {config=conf})
+	local res = {}
+	for _, conf in ipairs(configs) do
+		res[#res + 1] = module:ubus_call(conn, "uci", "revert", {config=conf})
+	end
 
-	module:exit_json({msg="Successfully reverted all staged changes to " .. conf, changed=true, result=res})
+	module:exit_json({msg="Successfully reverted all staged changes for " .. #configs .. " configurations", changed=true, result=res})
 end
 
 function parse_path(module)
@@ -107,6 +128,31 @@ function check_config(module, conn, config, section)
 	return config, nil
 end
 
+function compare_tables(a, b)
+	if type(a) ~= "table" then
+		if type(b) ~= "table" then
+			return a == b
+		end
+		return false
+	end
+	if #a ~= #b then
+		return false
+	end
+	if a == nil or b == nil then
+		return a == b
+	end
+	-- level 1 compare
+	table.sort(a)
+	table.sort(b)
+	for i,v in ipairs(a) do
+		if v ~= b[i] then
+			return false
+		end
+	end
+
+	return true
+end
+
 function set_value(module)
 	local p    = module:get_params()
 	local path = p["name"]
@@ -117,10 +163,15 @@ function set_value(module)
 
 	local target = p["value"]
 	local is     = query_value(module, conn, path, true)
+	local forcelist = p["forcelist"]
+
+	if type(target) == "table" and #target == 1 and not forcelist then
+		target = target[1]
+	end
 
 	local values = {}
 	if path["option"] then
-		values[path["option"]] = p["value"]
+		values[path["option"]] = target
 	end
 
 	local res
@@ -137,13 +188,12 @@ function set_value(module)
 		}
 
 		if path["option"] then
-			values[path["option"]] = p["value"]
 			message["values"]=values
 		end
 
 		res = module:ubus_call(conn, "uci", "add", message)
 
-	elseif target ~= is then
+	elseif not compare_tables(target, is) then
 		-- We have to take actions and use "uci set"
 		local message = {
 			config=conf,
@@ -223,7 +273,7 @@ function check_parameters(module)
 	-- op requires that no state is given, configs does not take any parameter
 	if p["op"] then
 		-- all operands do not take a state or value parameter
-			if p["value"] then
+		if p["value"] then
 			module:fail_json({msg="op=* do not work with 'state','value' or 'autocommit' arguments"})
 		end
 
@@ -250,6 +300,10 @@ function check_parameters(module)
 		if nil ~= p["value"] and ("unset" == p["state"] or "absent" == p["state"]) then
 			module:fail_json({msg="When deleting options, no value can be set"})
 		end
+
+		if nil ~= p["forcelist"] and  ("unset" == p["state"] or "absent" == p["state"]) then
+			module:fail_json({msg="'forcelist' only applies to set operations"})
+		end
 	end
 
 end
@@ -257,11 +311,12 @@ end
 function main(arg)
 	local module = Ansible.new({
 		name       = { aliases = {"path", "key"}, type="str"},
-		value      = { type="str" },
+		value      = { type="list" },
 		state      = { default="present", choices={"present", "absent", "set", "unset"} },
 		op         = { choices={"configs", "commit", "revert"} },
 		reload     = { aliases = {"reload_configs", "reload-configs"}, type='bool'},
 		autocommit = { default=true, type="bool" },
+		forcelist  = { default=false, type="bool" },
 		type       = { type="str" },
 		socket     = { type="path" },
 		timeout    = { type="int"}
