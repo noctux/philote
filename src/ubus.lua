@@ -92,12 +92,13 @@ function facts(module)
 			-- configs {}
 			-- foreach configs...
 			local f = {}
-			f["configs"] = module:ubus_call(conn, n, "configs", {})
+			local configs = module:ubus_call(conn, n, "configs", {})['configs']
+			f["configs"] = configs
 			f["state"] = {}
 
-			for _,conf in ipairs(f["configs"]) do
+			for _,conf in ipairs(configs) do
 				-- TODO: transform unnamed sections to their anonymous names
-				f["state"]["conf"] = module:ubus_call( conn, n, "state", {config=conf})
+				f["state"][conf] = module:ubus_call( conn, n, "state", {config=conf})['values']
 			end
 			facts[n] = f
 		end
