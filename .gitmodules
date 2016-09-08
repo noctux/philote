@@ -1,0 +1,3 @@
+[submodule "test/openwrt-in-vagrant"]
+	path = test/openwrt-in-vagrant
+	url = git://github.com:noctux/openwrt-in-vagrant.git
