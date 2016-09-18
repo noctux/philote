@@ -175,9 +175,8 @@ and `option`. The module tries to infer the type by looking for `,` in the
 input. If you need to force a singleentry list, please be sure to set the
 `forcelist=yes` parameter.
 
-|-----------+----------+---------+-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | parameter | required | default | choices                     | comments                                                                                                                                                                                           |
-|-----------+----------+---------+-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|-----------|----------|---------|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | name      | no       |         |                             | Path to the property to change. Syntax is `config.section.option`. _Aliases: path, key_                                                                                                            |
 | value     | no       |         |                             | For set: value to set the property to                                                                                                                                                              |
 | forcelist | no       | false   | Boolean                     | The module trys to guess the uci config type (list or string) from the supplied value via the existance of `,` in the input. Single entry lists require `forcelist=yes` to be recognized correctly |
@@ -188,7 +187,6 @@ input. If you need to force a singleentry list, please be sure to set the
 | type      | no       |         |                             | When creating a new section, a configuration-type is required. Aliases: _section-type_                                                                                                             |
 | socket    | no       |         |                             | Set a nonstandard path to the ubus socket if necessary                                                                                                                                             |
 | timeout   | no       |         |                             | Change the default ubus timeout                                                                                                                                                                    |
-|-----------+----------+---------+-----------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 Examples:
 
