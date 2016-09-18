@@ -275,11 +275,9 @@ and look how they are used in the provided modules.
 
 The libraries and only included in this repository for convenience are available
 under their own respective licenses:
-	- [dkjson](http://dkolf.de/src/dkjson-lua.fsl/home) MIT License
-	- [BinDecHex](http://www.dialectronics.com/Lua/code/BinDecHex.shtml) MIT
-	License
-	- [openwrt-in-vagrant](https://github.com/lifeeth/openwrt-in-vagrant) MIT
-	License
+- [dkjson](http://dkolf.de/src/dkjson-lua.fsl/home) MIT License
+- [BinDecHex](http://www.dialectronics.com/Lua/code/BinDecHex.shtml) MIT License
+- [openwrt-in-vagrant](https://github.com/lifeeth/openwrt-in-vagrant) MIT License
 
 All other code is available under the terms and conditions of the AGPL3 license.
 For more details please the the [LICENSE file](LICENSE).
