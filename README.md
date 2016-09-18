@@ -280,7 +280,7 @@ under their own respective licenses:
 - [openwrt-in-vagrant](https://github.com/lifeeth/openwrt-in-vagrant) MIT License
 
 All other code is available under the terms and conditions of the AGPL3 license.
-For more details please the the [LICENSE file](LICENSE).
+For more details please see the [LICENSE file](LICENSE).
 
 # Trivia
 
