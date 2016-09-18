@@ -1,6 +1,6 @@
-# Ansible openwrt
+# Philote
 
-An collection of ansible modules written in lua for Openwrt orchestration.
+Ansible orcherstration for Openwrt - with Lua!
 
 Ansible is build around a collection of modules that get send to the remote
 host to execute different tasks or collect information. Those modules are
@@ -285,3 +285,9 @@ under their own respective licenses:
 
 All other code is available under the terms and conditions of the AGPL3 license.
 For more details please the the [LICENSE file](LICENSE).
+
+# Trivia
+
+In Orson Scott Cards marvellous Ender's Game series the term "ansible" refers to
+a device for faster than light communication. The philote is the (fictional)
+subatomic particle which delivers the actual messages.
