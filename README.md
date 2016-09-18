@@ -20,22 +20,22 @@ this project was born.
 
 As the OpenWrt community seems to have a strange affection for lua, this
 repository currently implements the following modules:
-	- [copy](https://docs.ansible.com/ansible/copy_module.html)
-	- [file](https://docs.ansible.com/ansible/file_module.html)
-	- [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
-	- opkg
-	- [stat](https://docs.ansible.com/ansible/stat_module.html)
-	- ubus
-	- uci
+- [copy](https://docs.ansible.com/ansible/copy_module.html)
+- [file](https://docs.ansible.com/ansible/file_module.html)
+- [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
+- opkg
+- [stat](https://docs.ansible.com/ansible/stat_module.html)
+- ubus
+- uci
 
 Copy, file, lineinfile, stat and opkg are mostly straightforward ports of the
 official python modules included in the Ansible v2.1.1.0 release. However, there
 were some simplifications made:
-	- selinux file attributes are not supported
-	- validation commands are not supported
-	- file-operations are not guaranteed to be atomic
-	- permissions can only be specified in octal mode
-	- check_mode is only partly implemented
+- selinux file attributes are not supported
+- validation commands are not supported
+- file-operations are not guaranteed to be atomic
+- permissions can only be specified in octal mode
+- check_mode is only partly implemented
 
 Apart from that, the modules should behave exactly like the upstream modules,
 making it possible to use local actions such as
@@ -50,8 +50,8 @@ library are required.
 
 If you want to use the file related modules (copy, file, lineinfile, stat), the
 following opkg packages are required, which are not part of the standard images:
-	- luaposix
-	- coreutils-sha1sum
+- luaposix
+- coreutils-sha1sum
 
 However, as the opkg-module is independent from those packages, you can install
 them in your playbook like this:
@@ -92,11 +92,11 @@ Apart form the `./library/` folder, you might want to copy the provided `ansible
 # Documentation
 
 For the following modules, please refer to the upstream documentation
-	- [copy](https://docs.ansible.com/ansible/copy_module.html)
-	- [file](https://docs.ansible.com/ansible/file_module.html)
-	- [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
-	- [opkg](https://docs.ansible.com/ansible/opkg_module.html)
-	- [stat](https://docs.ansible.com/ansible/stat_module.html)
+- [copy](https://docs.ansible.com/ansible/copy_module.html)
+- [file](https://docs.ansible.com/ansible/file_module.html)
+- [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
+- [opkg](https://docs.ansible.com/ansible/opkg_module.html)
+- [stat](https://docs.ansible.com/ansible/stat_module.html)
 
 ## ubus module
 
