@@ -87,6 +87,8 @@ beforehand against a VM (e.g. the one from the openwrt-vagrant project which
 can be built from the submodule in `./test/`) or be sure that your router has a
 convenient reset/failsafe path.
 
+Apart form the `./library/` folder, you might want to copy the provided `ansible.cfg` as it configures ansible for better interoperability with the dropbear ssh-daemon used by openwrt.
+
 # Documentation
 
 For the following modules, please refer to the upstream documentation
