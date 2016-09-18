@@ -287,7 +287,7 @@ function check_parameters(module)
 		   or (not p["state"]) then
 			module:fail_json({msg="Both name and state are required to set/unset values"})
 		end
-		
+
 		-- when performing an "uci set", a value is required
 		if ("set" == p["state"] or "present" == p["state"]) then
 			if p["name"]["option"] and  not p["value"] then  -- Setting a regular value
@@ -317,7 +317,7 @@ function main(arg)
 		reload     = { aliases = {"reload_configs", "reload-configs"}, type='bool'},
 		autocommit = { default=true, type="bool" },
 		forcelist  = { default=false, type="bool" },
-		type       = { type="str" },
+		type       = { aliases = {"section-type"}, type="str" },
 		socket     = { type="path" },
 		timeout    = { type="int"}
 	})
