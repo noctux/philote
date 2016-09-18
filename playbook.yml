@@ -1,0 +1,31 @@
+- hosts: all
+  gather_facts: False
+  tasks:
+      - name: Gathering facts
+        ubus: cmd=facts
+
+      - name: Installing dependencies for file-related modules
+        opkg: pkg=luaposix,coreutils-sha1sum state=present update_cache=yes
+
+      - name: Securing uhttpd - Disable listening on wan
+        uci: name={{ item.key }} value={{ uci.state.network.lan.ipaddr }}:{{ item.port }} autocommit=false
+        with_items:
+            - { key: 'uhttpd.main.listen_http',  port: '80' }
+            - { key: 'uhttpd.main.listen_https', port: '443' }
+        notify:
+            - uci commit
+            - uhttp reload
+      - name: Securing dropbear - Disable login from wan
+        uci: name=dropbear.@dropbear[0].Interface value=br-lan autocommit=false
+        notify:
+            - uci commit
+            - dropbear reload
+
+  handlers:
+      - name: uci commit
+        raw: uci commit
+      - name: uhttp reload
+        raw: /etc/init.d/uhttpd reload
+      - name: dropbear reload
+        raw: /etc/init.d/dropbear reload
+
