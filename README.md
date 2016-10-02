@@ -233,7 +233,7 @@ An more complex example showing the usage of forcelist:
 Give me all your pullrequest :) If you find a bug in one of the provided modules
 (quite possible) or want to contribute a new module, feel free to propose a
 pullrequest.
-To make develpment of the modules easier, two libraries are provided. The
+To make development of the modules easier, two libraries are provided. The
 ansible library in `./src/ansible.lua` tries to provide a easy starting point
 for module development similar to ansibles `ansible.module_utils.basic` library.
 
