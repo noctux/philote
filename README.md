@@ -4,8 +4,8 @@ Ansible orcherstration for Openwrt - with Lua!
 
 Ansible is build around a collection of modules that get send to the remote
 host to execute different tasks or collect information. Those modules are
-implemented in python. However on embedded systems such as routers, ressources,
-in particular flash memory are scarse and a python runtime often not available.
+implemented in python. However on embedded systems such as routers, resources,
+in particular flash memory are scarce and a python runtime often not available.
 
 Those modules communicate with the ansible-toolsuite via well defined interfaces
 and are executed via ssh. As each module is a standalone program, there is no
@@ -14,7 +14,7 @@ attempts like [this](https://github.com/lefant/ansible-openwrt) which already
 implement a small set of modules as bash-scripts.
 
 However the primary author of this project disagrees with some of the
-implementation decisons (e.g. sourcing files with key=value-pairs as a kind of
+implementation decisions (e.g. sourcing files with key=value-pairs as a kind of
 parsing) and is generally a fan of (even rather limited in luas case) typing. So
 this project was born.
 
@@ -80,9 +80,9 @@ To make this process easier, a Makefile is provided that packs all modules in
 `./src/` and places the fatpacked variants in `library` for you. Just run `make`
 in the projects top directory.
 
-Please note, that this project is currenty **alpha** state. I used it to manage
+Please note, that this project is currently in **alpha** state. I used it to manage
 my personal router (playbook coming soon), but it still might easily lock you
-out of your device, eat your hamsters or worse. So pleace check your playbook
+out of your device, eat your hamsters or worse. So please check your playbook
 beforehand against a VM (e.g. the one from the openwrt-vagrant project which
 can be built from the submodule in `./test/`) or be sure that your router has a
 convenient reset/failsafe path.
@@ -230,7 +230,7 @@ An more complex example showing the usage of forcelist:
 
 # Contributing
 
-Give me all your pullrequest :) If you find a bug in one of the provided modules
+Give me all your pullrequests :) If you find a bug in one of the provided modules
 (quite possible) or want to contribute a new module, feel free to propose a
 pullrequest.
 To make development of the modules easier, two libraries are provided. The
@@ -267,14 +267,14 @@ file.
 	end
 ```
 
-Additionaly, the `./src/fileutils.lua` module has various wrappers for various
+Additionally, the `./src/fileutils.lua` module has various wrappers for various
 filesystemrelated tasks. Again: Please look up the functions in the sourcefile
 and look how they are used in the provided modules.
 
 # License
 
-The libraries and only included in this repository for convenience are available
-under their own respective licenses:
+The libraries and submodules were only included in this repository for
+convenience and are available under their own respective licenses:
 - [dkjson](http://dkolf.de/src/dkjson-lua.fsl/home) MIT License
 - [BinDecHex](http://www.dialectronics.com/Lua/code/BinDecHex.shtml) MIT License
 - [openwrt-in-vagrant](https://github.com/lifeeth/openwrt-in-vagrant) MIT License
