@@ -161,7 +161,7 @@ sub main {
 		# gather all includes in all modules
 		while(my ($key, $value) = each %{$modules}) {
 			my $extracted = extractIncludes($value);
-			push @new, $extracted->@*;
+			push @new, @$extracted;
 		}
 
 		# Add all new modules and their contents
