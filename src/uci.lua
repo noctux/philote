@@ -54,6 +54,27 @@ function commit(module)
 	module:exit_json({msg="Committed all changes for " .. #configs ..  " configurations", changed=true, result=res})
 end
 
+function get(module)
+	local conn = module:ubus_connect()
+	local p = module:get_params()
+	local path = p["name"]
+
+	local msg = {config=path["config"]}
+	if p["match"] ~= nil then
+		msg["match"] = p["match"]
+	end
+	if p["type"] ~= nil then
+		msg["type"] = p["type"]
+	end
+	if path["section"] ~= nil then
+		msg["section"] = path["section"] 
+	end
+
+	local res = module:ubus_call(conn, "uci", "get", msg)
+
+	module:exit_json({msg="Got config", changed=false, result=res})
+end
+
 function revert(module)
 	local conn = module:ubus_connect()
 	local path = module:get_params()["name"]
@@ -129,6 +150,10 @@ function check_config(module, conn, config, section)
 end
 
 function compare_tables(a, b)
+	if a == nil or b == nil then
+		return a == b
+	end
+
 	if type(a) ~= "table" then
 		if type(b) ~= "table" then
 			return a == b
@@ -137,9 +162,6 @@ function compare_tables(a, b)
 	end
 	if #a ~= #b then
 		return false
-	end
-	if a == nil or b == nil then
-		return a == b
 	end
 	-- level 1 compare
 	table.sort(a)
@@ -162,7 +184,6 @@ function set_value(module)
 	local conf, sec = check_config(module, conn, path["config"], path["section"])
 
 	local target = p["value"]
-	local is     = query_value(module, conn, path, true)
 	local forcelist = p["forcelist"]
 
 	if type(target) == "table" and #target == 1 and not forcelist then
@@ -175,7 +196,16 @@ function set_value(module)
 	end
 
 	local res
-	if not sec then
+	if nil ~= p["match"] then
+		local message = {
+			config=conf,
+			values=p["values"],
+			match=p["match"]
+		}
+		-- TODO: how can we properly report whether a changed happend in this case?
+		-- Get the entire config before and after to compare?
+		res = module:ubus_call(conn, "uci", "set", message)
+	elseif not sec then
 		-- We have to create a section and use "uci add"
 		if not p["type"] then
 			module:fail_json({msg="when creating sections, a type is required", message=message})
@@ -193,7 +223,7 @@ function set_value(module)
 
 		res = module:ubus_call(conn, "uci", "add", message)
 
-	elseif not compare_tables(target, is) then
+	elseif not compare_tables(target, query_value(module, conn, path, true)) then
 		-- We have to take actions and use "uci set"
 		local message = {
 			config=conf,
@@ -292,7 +322,7 @@ function check_parameters(module)
 		if ("set" == p["state"] or "present" == p["state"]) then
 			if p["name"]["option"] and  not p["value"] then  -- Setting a regular value
 				module:fail_json({msg="When using 'uci set', a value is required"})
-			elseif not p["name"]["option"] and not p["type"] then -- Creating a section
+			elseif not p["name"]["option"] and not p["type"] and not p["match"] then -- Creating a section
 				module:fail_json({msg="When creating sections with 'uci set', a type is required"})
 			end
 		end
@@ -313,13 +343,15 @@ function main(arg)
 		name       = { aliases = {"path", "key"}, type="str"},
 		value      = { type="list" },
 		state      = { default="present", choices={"present", "absent", "set", "unset"} },
-		op         = { choices={"configs", "commit", "revert"} },
+		op         = { choices={"configs", "commit", "revert", "get"} },
 		reload     = { aliases = {"reload_configs", "reload-configs"}, type='bool'},
 		autocommit = { default=true, type="bool" },
 		forcelist  = { default=false, type="bool" },
 		type       = { aliases = {"section-type"}, type="str" },
 		socket     = { type="path" },
-		timeout    = { type="int"}
+		timeout    = { type="int"},
+		match      = { type="dict"},
+		values     = { type="dict"}
 	})
 
 	module:parse(arg[1])
@@ -338,20 +370,37 @@ function main(arg)
 		commit(module)
 	elseif "revert"  == p["op"] then
 		revert(module)
+	elseif "get"  == p["op"] then
+		get(module)
 	else
 		-- If no op was given, simply enforce the setting state
-		local state     = p["state"]
+		local state = p["state"]
+		local doset = true
+		if "absent" == state or "unset" == state then
+			doset = false
+		elseif "present" ~= state and "set" ~= state then
+  			module:fail_json({msg="Set state must be one of set, present, unset, absent"})
+		end
 
 		-- check if a full path was specified
 		local path = p["name"]
-		if not path["config"] or not path["section"] then
-			module:fail_json({msg="Path has to be structured like this: '<config>.<section>[.<option>]'", parsed=pathobject})
-		end
+		if not path["config"] then
+  			module:fail_json({msg="Set operation requires a path"})
+        end
+  		if not path["section"] then
+		  	if doset and not p["type"] and not p["match"] then
+				module:fail_json({msg="Set operation requires a type, a match, or a path of"
+					.. " the form '<config>.<section>[.<option>]'", parsed=pathobject})
+			elseif not doset then
+				module:fail_json({msg="Set absent operation requires a path of"
+					.. " the form '<config>.<section>[.<option>]'", parsed=pathobject})
+			end
+  		end
 
 		-- Do the ops
-		if "present" == state or "set" == state then
+		if doset then
 			set_value(module)
-		elseif "absent" == state or "removed" == state then
+		else
 			unset_value(module)
 		end
 	end
