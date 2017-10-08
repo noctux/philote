@@ -197,14 +197,31 @@ function set_value(module)
 
 	local res
 	if nil ~= p["match"] then
+		local preres = module:ubus_call(conn, "uci", "changes", {config=conf})
+		local prechanges = preres["changes"] or {}
+
 		local message = {
 			config=conf,
 			values=p["values"],
 			match=p["match"]
 		}
-		-- TODO: how can we properly report whether a changed happend in this case?
-		-- Get the entire config before and after to compare?
-		res = module:ubus_call(conn, "uci", "set", message)
+		res = module:ubus_call(conn, "uci", "set", message) or {}
+
+		-- Since 'uci changes' returns changes in the order they were made,
+		-- determine what the 'set' command changed by stripping off the
+		-- first #prechanges entries from the postchanges.
+		local postres = module:ubus_call(conn, "uci", "changes", {config=conf})
+		local postchanges = postres["changes"] or {}
+		for i = #prechanges, 1, -1 do
+			table.remove(postchanges, i)
+		end
+		res["changes"] = postchanges
+
+		conn:close()
+		if #postchanges > 0 then
+			module:exit_json({msg="Changes made", changed=true, result=res})
+		end
+		module:exit_json({msg="No changes made", changed=false, result=res})
 	elseif not sec then
 		-- We have to create a section and use "uci add"
 		if not p["type"] then
