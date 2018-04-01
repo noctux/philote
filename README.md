@@ -105,7 +105,7 @@ system can be gatherd via the ubus interface and will automatically be
 integrated into the host_facts for reuse in the playbook like this:
 
 ```yaml
-	ubus: cmd=facts
+    ubus: cmd=facts
 ```
 
 Otherwise, this module is a slim wrapper around the
@@ -222,12 +222,12 @@ An more complex example showing the usage of forcelist:
 
 ```yaml
   - name: Securing uhttpd - Disable listening on wan
-	uci: name={{ item.key }} value={{ uci.state.network.lan.ipaddr }}:{{ item.port }} forcelist=true autocommit=false
-	with_items:
-		- { key: 'uhttpd.main.listen_http',  port: '80' }
-		- { key: 'uhttpd.main.listen_https', port: '443' }
-	notify:
-		- uci commit
+    uci: name={{ item.key }} value={{ uci.state.network.lan.ipaddr }}:{{ item.port }} forcelist=true autocommit=false
+    with_items:
+        - { key: 'uhttpd.main.listen_http',  port: '80' }
+        - { key: 'uhttpd.main.listen_https', port: '443' }
+    notify:
+        - uci commit
 ```
 
 # Contributing
