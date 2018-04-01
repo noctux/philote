@@ -32,6 +32,8 @@ function main(arg)
 		, validate = { required=false, type='str' }
 		, directory_mode = { required=false }
 		, remote_src = { required=false, type='bool' }
+		-- sha256sum, to check if the copy was successful - currently ignored
+		, checksum = {}
 
 
 		-- file common args
