@@ -1,6 +1,6 @@
 .PHONY: all
 
-all: ./library/copy.lua ./library/file.lua ./library/lineinfile.lua ./library/opkg.lua ./library/stat.lua ./library/ubus.lua ./library/uci.lua
+all: ./library/copywrt.lua ./library/filewrt.lua ./library/lineinfile.lua ./library/opkg.lua ./library/statwrt.lua ./library/ubus.lua ./library/uci.lua
 
 WHITELIST=io,os,posix.,ubus
 FATPACKARGS=--whitelist $(WHITELIST) --truncate
