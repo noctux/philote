@@ -20,15 +20,15 @@ this project was born.
 
 As the OpenWrt community seems to have a strange affection for lua, this
 repository currently implements the following modules:
-- [copy](https://docs.ansible.com/ansible/copy_module.html)
-- [file](https://docs.ansible.com/ansible/file_module.html)
+- [copywrt](https://docs.ansible.com/ansible/copy_module.html)
+- [filewrt](https://docs.ansible.com/ansible/file_module.html)
 - [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
 - opkg
-- [stat](https://docs.ansible.com/ansible/stat_module.html)
+- [statwrt](https://docs.ansible.com/ansible/stat_module.html)
 - ubus
 - uci
 
-Copy, file, lineinfile, stat and opkg are mostly straightforward ports of the
+Copywrt, filewrt, lineinfile, statwrt and opkg are mostly straightforward ports of the
 official python modules included in the Ansible v2.1.1.0 release. However, there
 were some simplifications made:
 - selinux file attributes are not supported
@@ -48,7 +48,7 @@ For building the modules, perl and the
 [Data::Compare](http://search.cpan.org/~dcantrell/Data-Compare-1.25/lib/Data/Compare.pm)
 library are required.
 
-If you want to use the file related modules (copy, file, lineinfile, stat), the
+If you want to use the file related modules (copywrt, filewrt, lineinfile, statwrt), the
 following opkg packages are required, which are not part of the standard images:
 - luaposix
 - coreutils-sha1sum
@@ -92,11 +92,11 @@ Apart form the `./library/` folder, you might want to copy the provided `ansible
 # Documentation
 
 For the following modules, please refer to the upstream documentation
-- [copy](https://docs.ansible.com/ansible/copy_module.html)
-- [file](https://docs.ansible.com/ansible/file_module.html)
+- [copywrt](https://docs.ansible.com/ansible/copy_module.html)
+- [filewrt](https://docs.ansible.com/ansible/file_module.html)
 - [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
 - [opkg](https://docs.ansible.com/ansible/opkg_module.html)
-- [stat](https://docs.ansible.com/ansible/stat_module.html)
+- [statwrt](https://docs.ansible.com/ansible/stat_module.html)
 
 ## ubus module
 
