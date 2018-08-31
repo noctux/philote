@@ -112,7 +112,7 @@ function main(arg)
 	local module = Ansible.new(
 		{ state = { choices={'file', 'directory', 'link', 'hard', 'touch', 'absent' } }
 		, path = { aliases={'dest', 'name'}, required=true }
-		, original_basename = { required=false }
+		, _original_basename = { required=false }
 		, recurse = { default=false, type='bool' }
 		, force = { required=false, default=false, type='bool' }
 		, diff_peek = {}
@@ -204,11 +204,11 @@ function main(arg)
 		end
 	end
 
-	-- original_basename is used by other modules that depend on file
+	-- _original_basename is used by other modules that depend on file
 	if File.isdir(path) and ("link" ~= state and "absent" ~= state) then
 		local basename = nil
-		if params['original_basename'] then
-			basename = params['original_basename']
+		if params['_original_basename'] then
+			basename = params['_original_basename']
 		elseif src ~= nil then
 			basename = File.basename(src)
 		end

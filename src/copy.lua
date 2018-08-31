@@ -24,7 +24,7 @@ end
 function main(arg)
 	local module = Ansible.new(
 		{ src   = { required=true }
-		, original_basename = { required=false }
+		, _original_basename = { required=false }
 		, content = { required=false }
 		, path = {  aliases={'dest'}, required=true }
 		, backup = { default=false, type='bool' }
@@ -69,7 +69,7 @@ function main(arg)
 	local dest = File.expanduser(p['path'])
 	local backup = p['backup']
 	local force = p['force']
-	local original_basename = p['original_basename']
+	local _original_basename = p['_original_basename']
 	local validate = p['validate']
 	local follow = p['follow']
 	local mode = p['mode']
@@ -92,7 +92,7 @@ function main(arg)
 	local changed = false
 
 	-- Special handling for recursive copy - create intermediate dirs
-	if original_basename and string.match(dest, "/$") then
+	if _original_basename and string.match(dest, "/$") then
 		dest = File.join(dest, orignal_basename)
 		local dirname = File.dirname(dest)
 		if not File.exists(dirname) and File.isabs(dirname) then
@@ -113,8 +113,8 @@ function main(arg)
 		end
 		if File.isdir(dest) then
 			local basename = File.basename(src)
-			if original_basename then
-				basename = original_basename
+			if _original_basename then
+				basename = _original_basename
 			end
 			dest = File.join(dest, basename)
 		end
