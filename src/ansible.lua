@@ -60,6 +60,20 @@ local function findspec(name, spec)
 	return nil
 end
 
+local function starts_with(str, start)
+	return str:sub(1, #start) == start
+end
+
+local function extract_internal_ansible_params(params)
+	local copy = {}
+	for k,v in pairs(params) do
+		if starts_with(k, "_ansible") then
+			copy[k] = v
+		end
+	end
+	return copy
+end
+
 local function canonicalize(params, spec)
 	local copy = {}
 	for k,v in pairs(params) do
@@ -235,6 +249,8 @@ function Ansible:parse(inputfile)
 	if err then
 		self:fail_json({msg="INTERNAL: Illegal json input received"})
 	end
+
+	self.internal_params = extract_internal_ansible_params(params)
 
 	-- resolve aliases
 	params, err = canonicalize(params, self.spec)
@@ -460,8 +476,7 @@ function Ansible:is_dir(path)
 end
 
 function Ansible:check_mode()
-	-- FIXME
-	return false
+	return self.internal_params["_ansible_check_mode"]
 end
 
 return Ansible
