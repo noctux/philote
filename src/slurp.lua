@@ -12,12 +12,7 @@ function main(arg)
 	module:parse(arg[1])
 
 	local source = module:get_params()["src"]
-
-	-- FIXME: add IO error handling
-	local file = io.open(source, "rb")
-	local content = file:read "*a"
-	file:close()
-
+	local content = module:slurp(source)
 	local encoded = base64.encode(content)
 
 	module:exit_json({content=encoded, source=source, encoding='base64'})
