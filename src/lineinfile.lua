@@ -105,6 +105,7 @@ function present(module, dest, regexp, line, insertafter, insertbefore, create, 
 	local m = nil
 	for lineno, cur_line in ipairs(lines) do
 		if regexp ~= nil then
+			-- FIXME: lua patterns are not regexes
 			match_found = string.match(cur_line, mre)
 		else
 			match_found = line == rstrip(cur_line, '\r\n')
