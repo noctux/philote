@@ -406,7 +406,6 @@ function Ansible:fail_json(kwargs)
 end
 
 function Ansible:exit_json(kwargs)
-	assert(kwargs['msg'])
 	if nil == kwargs['changed'] then
 		kwargs['changed'] = false
 	end
