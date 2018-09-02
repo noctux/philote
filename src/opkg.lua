@@ -44,10 +44,12 @@ function remove_packages(module, opkg_path, packages)
 	for _,package in ipairs(packages) do
 		-- Query the package first, to see if we even need to remove
 		if query_package(module, opkg_path, package) then
-			local rc, out, err = module:run_command(string.format("%s remove %s %q", opkg_path, force, package))
+			if not module:check_mode() then
+				local rc, out, err = module:run_command(string.format("%s remove %s %q", opkg_path, force, package))
 
-			if rc ~= 0 or query_package(module, opkg_path, package) then
-				module:fail_json({msg="failed to remove " .. package, opkg={rc=rc, out=out, err=err}})
+				if rc ~= 0 or query_package(module, opkg_path, package) then
+					module:fail_json({msg="failed to remove " .. package, opkg={rc=rc, out=out, err=err}})
+				end
 			end
 
 			remove_c = remove_c + 1;
@@ -71,10 +73,12 @@ function install_packages(module, opkg_path, packages)
 	for _,package in ipairs(packages) do
 		-- Query the package first, to see if we even need to remove
 		if not query_package(module, opkg_path, package) then
-			local rc, out, err = module:run_command(string.format("%s install %s %s", opkg_path, force, package))
+			if not module:check_mode() then
+				local rc, out, err = module:run_command(string.format("%s install %s %s", opkg_path, force, package))
 
-			if rc ~= 0 or not query_package(module, opkg_path, package) then
-				module:fail_json({msg=string.format("failed to install %s", package), opkg={rc=rc, out=out, err=err}})
+				if rc ~= 0 or not query_package(module, opkg_path, package) then
+					module:fail_json({msg=string.format("failed to install %s", package), opkg={rc=rc, out=out, err=err}})
+				end
 			end
 
 			install_c = install_c + 1;
@@ -102,7 +106,7 @@ function main(arg)
 
 	local p = module:get_params()
 
-	if p["update_cache"] then
+	if p["update_cache"] and not module:check_mode() then
 		update_package_db(module, opkg_path)
 	end
 	
