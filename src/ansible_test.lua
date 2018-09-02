@@ -1,5 +1,4 @@
 #!/usr/bin/env lua
--- WANT_JSON
 
 local Ansible = require("ansible")
 

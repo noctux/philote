@@ -6,6 +6,8 @@ local ubus = require("ubus")
 
 Ansible.__index = Ansible
 
+local json_arguments = [===[<<INCLUDE_ANSIBLE_MODULE_JSON_ARGS>>]===]
+
 function Ansible.new(spec) 
 	local self = setmetatable({}, Ansible)
 	self.spec = spec
@@ -244,7 +246,7 @@ local function check_transform_type(variable, ansibletype)
 end
 
 function Ansible:parse(inputfile)
-	local params, pos, err = json.decode(self:slurp(inputfile))
+	local params, pos, err = json.decode(json_arguments)
 
 	if err then
 		self:fail_json({msg="INTERNAL: Illegal json input received"})
