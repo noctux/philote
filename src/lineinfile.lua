@@ -83,10 +83,9 @@ function present(module, dest, regexp, line, insertafter, insertbefore, create, 
 		lines = splitlines(module:slurp(dest))
 	end
 
-	-- No diff mode on memory restrained devices...
-	-- if module:_diff then
-	-- 	diff['before'] = -- ''.join(lines
-	-- end
+	if module._diff then
+		diff['before'] = join(lines, "\n")
+	end
 	
 	local mre = regexp
 	
@@ -170,10 +169,9 @@ function present(module, dest, regexp, line, insertafter, insertbefore, create, 
 		end
 	end
 
-	-- No diff mode on memory restrained devices...
-	-- if module:_diff then
-	-- 	diff['after'] = -- ''.join(lines)
-	-- end
+	if module._diff then
+		diff['after'] = join(lines, "\n")
+	end
 
 	local backupdest = ""
 	if changed and not module:check_mode() then
@@ -207,9 +205,9 @@ function absent(module, dest, regexp, line, backup)
 
 	local lines = splitlines(module:slurp(dest))
 
-	-- if module:_diff then
-	-- 	diff['before'] = join(lines, "\n")
-	-- end
+	if module._diff then
+		diff['before'] = join(lines, "\n")
+	end
 
 	local cre
 	if regexp ~= nil then
@@ -234,9 +232,9 @@ function absent(module, dest, regexp, line, backup)
 	lines = filter(matcher, lines)
 	changed = #found > 0
 
-	-- if module:_diff then
-	-- 	diff['after'] = join(lines, "\n")
-	-- end
+	if module._diff then
+		diff['after'] = join(lines, "\n")
+	end
 
 	backupdest = ""
 	if changed and not module:check_mode() then

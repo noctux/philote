@@ -253,6 +253,7 @@ function Ansible:parse(inputfile)
 	end
 
 	self.internal_params = extract_internal_ansible_params(params)
+	self._diff = self.internal_params['_ansible_diff']
 
 	-- resolve aliases
 	params, err = canonicalize(params, self.spec)
