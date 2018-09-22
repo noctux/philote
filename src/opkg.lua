@@ -92,12 +92,58 @@ function install_packages(module, opkg_path, packages)
 	end
 end
 
+function last_cache_update_timestamp(module)
+	local rc, stdout, stderr = module:run_command("date +%s -r /tmp/opkg-lists")
+	if rc ~= 0 then
+		return nil
+	else
+		return tonumber(stdout)
+	end
+end
+
+function current_timestamp(module)
+	local rc, stdout, stderr = module:run_command("date +%s")
+	return tonumber(stdout)
+end
+
+function cache_age(module)
+	local last_update = last_cache_update_timestamp(module)
+	if last_update == nil then
+		return nil
+	else
+		return current_timestamp(module) - last_update
+	end
+end
+
+function should_update_cache(module)
+	if module.params.update_cache then
+		return true
+	end
+	if module.params.cache_valid_time ~= nil then
+		local age = cache_age(module)
+		if age == nil then
+			return true
+		end
+		if age > module.params.cache_valid_time then
+			return true
+		end
+	end
+	return false
+end
+
+function update_cache_if_needed(module, opkg_path)
+	if should_update_cache(module) and not module:check_mode() then
+		update_package_db(module, opkg_path)
+	end
+end
+
 function main(arg)
 	local module = Ansible.new({
 		name =  { aliases = {"pkg"}, required=true , type='list'},
 		state = { default = "present", choices={"present", "installed", "absent", "removed"} },
 		force = { default = "", choices={"", "depends", "maintainer", "reinstall", "overwrite", "downgrade", "space", "postinstall", "remove", "checksum", "removal-of-dependent-packages"} } ,
-		update_cache = { default = "no", aliases={ "update-cache" }, type='bool' }
+		update_cache = { default = "no", aliases={ "update-cache" }, type='bool' },
+		cache_valid_time = { type='int' }
 	})
 
 	local opkg_path = module:get_bin_path('opkg', true, {'/bin'})
@@ -106,9 +152,7 @@ function main(arg)
 
 	local p = module:get_params()
 
-	if p["update_cache"] and not module:check_mode() then
-		update_package_db(module, opkg_path)
-	end
+	update_cache_if_needed(module, opkg_path)
 	
 	local state     = p["state"]
 	local packages  = p["name"]
