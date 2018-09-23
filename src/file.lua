@@ -112,7 +112,7 @@ function main(arg)
 	local module = Ansible.new(
 		{ state = { choices={'file', 'directory', 'link', 'hard', 'touch', 'absent' } }
 		, path = { aliases={'dest', 'name'}, required=true }
-		, original_basename = { required=false }
+		, original_basename = { aliases={"_original_basename"}, required=false }
 		, recurse = { default=false, type='bool' }
 		, force = { required=false, default=false, type='bool' }
 		, diff_peek = {}

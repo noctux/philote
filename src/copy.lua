@@ -24,7 +24,7 @@ end
 function main(arg)
 	local module = Ansible.new(
 		{ src   = { required=true }
-		, original_basename = { required=false }
+		, original_basename = { aliases={"_original_basename"}, required=false }
 		, content = { required=false }
 		, path = {  aliases={'dest'}, required=true }
 		, backup = { default=false, type='bool' }
