@@ -6,6 +6,8 @@ local ubus = require("ubus")
 
 Ansible.__index = Ansible
 
+local json_arguments = [===[<<INCLUDE_ANSIBLE_MODULE_JSON_ARGS>>]===]
+
 function Ansible.new(spec) 
 	local self = setmetatable({}, Ansible)
 	self.spec = spec
@@ -58,6 +60,20 @@ local function findspec(name, spec)
 	end
 
 	return nil
+end
+
+local function starts_with(str, start)
+	return str:sub(1, #start) == start
+end
+
+local function extract_internal_ansible_params(params)
+	local copy = {}
+	for k,v in pairs(params) do
+		if starts_with(k, "_ansible") then
+			copy[k] = v
+		end
+	end
+	return copy
 end
 
 local function canonicalize(params, spec)
@@ -230,11 +246,14 @@ local function check_transform_type(variable, ansibletype)
 end
 
 function Ansible:parse(inputfile)
-	local params, pos, err = json.decode(self:slurp(inputfile))
+	local params, pos, err = json.decode(json_arguments)
 
 	if err then
 		self:fail_json({msg="INTERNAL: Illegal json input received"})
 	end
+
+	self.internal_params = extract_internal_ansible_params(params)
+	self._diff = self.internal_params['_ansible_diff']
 
 	-- resolve aliases
 	params, err = canonicalize(params, self.spec)
@@ -390,7 +409,6 @@ function Ansible:fail_json(kwargs)
 end
 
 function Ansible:exit_json(kwargs)
-	assert(kwargs['msg'])
 	if nil == kwargs['changed'] then
 		kwargs['changed'] = false
 	end
@@ -460,8 +478,7 @@ function Ansible:is_dir(path)
 end
 
 function Ansible:check_mode()
-	-- FIXME
-	return false
+	return self.internal_params["_ansible_check_mode"]
 end
 
 return Ansible

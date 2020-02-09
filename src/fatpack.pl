@@ -106,10 +106,10 @@ do
 	local _ENV = _ENV
 EOF
 
-	while(my ($module, $content) = each %{$modules}) {
+	foreach my $module (sort keys %{$modules}) {
 		next if ($module eq $mainmodule);
 
-		my $effcontent = $content;
+		my $effcontent = %{$modules}{$module};
 		# Strip the shebang
 		$effcontent =~ s/^#!.*\n//g;
 
