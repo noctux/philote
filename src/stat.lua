@@ -1,5 +1,4 @@
 #!/usr/bin/lua
--- WANT_JSON
 
 local Ansible = require("ansible")
 local File    = require("fileutils")

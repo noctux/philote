@@ -1,5 +1,4 @@
 #!/usr/bin/lua
--- WANT_JSON
 
 local Ansible = require("ansible")
 local File    = require("fileutils")
@@ -204,11 +203,11 @@ function main(arg)
 		end
 	end
 
-	-- original_basename is used by other modules that depend on file
+	-- _original_basename is used by other modules that depend on file
 	if File.isdir(path) and ("link" ~= state and "absent" ~= state) then
 		local basename = nil
-		if params['original_basename'] then
-			basename = params['original_basename']
+		if params['_original_basename'] then
+			basename = params['_original_basename']
 		elseif src ~= nil then
 			basename = File.basename(src)
 		end
