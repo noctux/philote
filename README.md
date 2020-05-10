@@ -25,11 +25,12 @@ repository currently implements the following modules:
 - [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
 - opkg
 - [ping](https://docs.ansible.com/ansible/ping_module.html)
+- [service](https://docs.ansible.com/ansible/service_module.html)
 - [stat](https://docs.ansible.com/ansible/stat_module.html)
 - ubus
 - uci
 
-Copy, file, lineinfile, stat, ping and opkg are mostly straightforward ports of the
+Copy, file, lineinfile, stat, service, ping and opkg are mostly straightforward ports of the
 official python modules included in the Ansible v2.1.1.0 release. However, there
 were some simplifications made:
 - selinux file attributes are not supported
@@ -98,6 +99,7 @@ For the following modules, please refer to the upstream documentation
 - [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
 - [opkg](https://docs.ansible.com/ansible/opkg_module.html)
 - [ping](https://docs.ansible.com/ansible/ping_module.html)
+- [service](https://docs.ansible.com/ansible/service_module.html)
 - [stat](https://docs.ansible.com/ansible/stat_module.html)
 
 ## ubus module
