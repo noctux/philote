@@ -16,5 +16,5 @@ build: ## Build the container
 	docker build -t $(APP_NAME) .
 
 run: ## Run container 
-	docker run -i -t -v ${PWD}/library:/app/libary --rm --name="$(APP_NAME)" $(APP_NAME)
+	docker run -i -t -v ${PWD}/library:/app/library --rm --name="$(APP_NAME)" $(APP_NAME)
 
