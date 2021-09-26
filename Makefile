@@ -5,7 +5,7 @@ WHITELIST=io,os,posix.,ubus
 FATPACKARGS=--whitelist $(WHITELIST) --truncate
 
 # LOCAL DEFAULT TASKS
-all: ./library/copy.lua ./library/file.lua ./library/lineinfile.lua ./library/opkg.lua ./library/ping.lua ./library/slurp.lua ./library/stat.lua ./library/ubus.lua ./library/uci.lua
+all: ./library/copy.lua ./library/file.lua ./library/lineinfile.lua ./library/opkg.lua ./library/ping.lua ./library/service.lua ./library/slurp.lua ./library/stat.lua ./library/ubus.lua ./library/uci.lua
 
 ./library/%.lua : ./src/%.lua ./src/*.lua
 	./src/fatpack.pl --input $^ --output $(dir $@) $(FATPACKARGS)
