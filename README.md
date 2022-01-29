@@ -20,13 +20,13 @@ this project was born.
 
 As the OpenWrt community seems to have a strange affection for lua, this
 repository currently implements the following modules:
-- [copy](https://docs.ansible.com/ansible/copy_module.html)
-- [file](https://docs.ansible.com/ansible/file_module.html)
-- [lineinfile](https://docs.ansible.com/ansible/lineinfile_module.html)
+- [copy](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html)
+- [file](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html)
+- [lineinfile](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html)
 - opkg
-- [ping](https://docs.ansible.com/ansible/ping_module.html)
-- [service](https://docs.ansible.com/ansible/service_module.html)
-- [stat](https://docs.ansible.com/ansible/stat_module.html)
+- [ping](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/ping_module.html)
+- [service](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html)
+- [stat](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/stat_module.html)
 - ubus
 - uci
 
@@ -232,6 +232,11 @@ An more complex example showing the usage of forcelist:
         - { key: 'uhttpd.main.listen_https', port: '443' }
     notify:
         - uci commit
+```
+
+# Invoke
+```
+ansible-playbook playbook.yml
 ```
 
 # Contributing
