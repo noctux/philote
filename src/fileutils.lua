@@ -94,6 +94,16 @@ function FileUtil.islnk(path)
 	end
 end
 
+function FileUtil.isfile(path)
+	local pstat = stat.lstat(path)
+
+	if pstat then
+		return 0 ~= stat.S_ISREG(pstat['st_mode'])
+	else
+		return false
+	end
+end
+
 function FileUtil.stat(path)
 	return stat.stat(path)
 end
